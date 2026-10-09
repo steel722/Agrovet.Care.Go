@@ -5,11 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Administración — Agrovet.Care.Go</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-<script src="firebase-config.js"></script>
 <style>
   .admin-card { background: var(--white); border: 2px solid var(--line); border-radius: 22px; padding: 44px 38px; max-width: 560px; margin: 40px auto; }
   .admin-card h2 { font-size: 2rem; margin-bottom: 8px; text-align: center; }
@@ -31,7 +26,7 @@
     border: none; background: rgba(179,38,30,.9); color: #fff; font-size: 1rem; cursor: pointer;
   }
   .btn-secundario { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); display: inline-block; padding: 10px 26px; border-radius: 40px; cursor: pointer; font-size: .9rem; }
-  .alerta-config { background: #fff8e1; border: 1px solid #e0c36a; border-radius: 12px; padding: 16px 20px; max-width: 560px; margin: 30px auto; color: #6d4c00; }
+  .nota { background: var(--parchment-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; max-width: 560px; margin: 0 auto 10px; font-size: .9rem; color: var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -47,9 +42,6 @@
 </header>
 
 <main class="wrap">
-  <div id="alerta" class="alerta-config" style="display:none">
-    ⚠️ Falta configurar Firebase: abre <strong>firebase-config.js</strong> y pega los datos de tu proyecto (ver README_FIREBASE.md).
-  </div>
 
   <div id="login-box" class="admin-card">
     <h2>Iniciar sesión</h2>
@@ -62,7 +54,7 @@
 
   <div id="panel" class="admin-card" style="display:none">
     <h2>Subir foto de animal</h2>
-    <p class="sub">La foto aparecerá en la galería de la página</p>
+    <p class="sub">La foto aparecerá en la galería de este dispositivo</p>
     <input type="file" id="file" accept="image/*">
     <img id="preview" alt="Vista previa">
     <input type="text" id="nombre" placeholder="Nombre del animal *" maxlength="60">
@@ -78,101 +70,125 @@
     <div id="mis-fotos"></div>
     <p style="text-align:center"><button class="btn-secundario" id="btn-salir">Cerrar sesión</button></p>
   </div>
+
+  <div class="nota">💡 Las fotos se guardan en este navegador. Para que se vean en otros dispositivos se necesitaría la versión con servidor.</div>
+
 </main>
 
 <script>
-(function () {
-  if (!FIREBASE_LISTO) {
-    document.getElementById("alerta").style.display = "block";
-    document.getElementById("login-box").style.display = "none";
-    return;
-  }
-  firebase.initializeApp(firebaseConfig);
-  var auth = firebase.auth();
-  var db = firebase.firestore();
-  var storage = firebase.storage();
+// ============================================================
+//  ACCESO — cambia aquí el correo y la contraseña de tu cliente
+// ============================================================
+const ADMIN_USER = "admin@agrovetcarego.com";
+const ADMIN_PASS = "agrovet2026";
 
-  var loginBox = document.getElementById("login-box");
-  var panel = document.getElementById("panel");
-  var loginError = document.getElementById("login-error");
+(function () {
+  const KEY = "agrovet_fotos";
+  const loginBox = document.getElementById("login-box");
+  const panel = document.getElementById("panel");
+  const loginError = document.getElementById("login-error");
+
+  function getFotos() {
+    try { return JSON.parse(localStorage.getItem(KEY) || "[]"); }
+    catch (e) { return []; }
+  }
+  function saveFotos(f) {
+    try { localStorage.setItem(KEY, JSON.stringify(f)); return true; }
+    catch (e) { return false; }
+  }
+
+  function mostrar() {
+    const logueado = sessionStorage.getItem("agrovet_admin") === "1";
+    loginBox.style.display = logueado ? "none" : "block";
+    panel.style.display = logueado ? "block" : "none";
+    if (logueado) cargarFotos();
+  }
 
   document.getElementById("btn-login").addEventListener("click", function () {
-    loginError.textContent = "";
-    var email = document.getElementById("email").value.trim();
-    var pass = document.getElementById("pass").value;
-    auth.signInWithEmailAndPassword(email, pass).catch(function (e) {
-      loginError.textContent = "No se pudo entrar. Revisa el correo y la contraseña.";
-    });
+    const email = document.getElementById("email").value.trim();
+    const pass = document.getElementById("pass").value;
+    if (email === ADMIN_USER && pass === ADMIN_PASS) {
+      sessionStorage.setItem("agrovet_admin", "1");
+      loginError.textContent = "";
+      document.getElementById("pass").value = "";
+      mostrar();
+    } else {
+      loginError.textContent = "Correo o contraseña incorrectos.";
+    }
   });
 
   document.getElementById("btn-salir").addEventListener("click", function () {
-    auth.signOut();
+    sessionStorage.removeItem("agrovet_admin");
+    mostrar();
   });
 
-  auth.onAuthStateChanged(function (user) {
-    loginBox.style.display = user ? "none" : "block";
-    panel.style.display = user ? "block" : "none";
-    if (user) cargarFotos();
-  });
-
-  var fileInput = document.getElementById("file");
-  var preview = document.getElementById("preview");
+  const fileInput = document.getElementById("file");
+  const preview = document.getElementById("preview");
   fileInput.addEventListener("change", function () {
-    var f = fileInput.files[0];
+    const f = fileInput.files[0];
     if (f) { preview.src = URL.createObjectURL(f); preview.style.display = "block"; }
     else { preview.style.display = "none"; }
   });
 
+  // Reduce la imagen para que quepan más fotos en el navegador
+  function procesarImagen(file, cb) {
+    const img = new Image();
+    img.onload = function () {
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      cb(c.toDataURL("image/jpeg", 0.82));
+    };
+    img.src = URL.createObjectURL(file);
+  }
+
   document.getElementById("btn-subir").addEventListener("click", function () {
-    var msg = document.getElementById("up-msg");
-    var f = fileInput.files[0];
-    var nombre = document.getElementById("nombre").value.trim();
-    var categoria = document.getElementById("categoria").value;
-    var descripcion = document.getElementById("descripcion").value.trim();
+    const msg = document.getElementById("up-msg");
+    const f = fileInput.files[0];
+    const nombre = document.getElementById("nombre").value.trim();
+    const categoria = document.getElementById("categoria").value;
+    const descripcion = document.getElementById("descripcion").value.trim();
     if (!f) { msg.textContent = "Elige una foto primero."; return; }
     if (!nombre) { msg.textContent = "Ponle un nombre al animal."; return; }
     msg.textContent = "Subiendo…";
-    var path = "fotos/" + Date.now() + "_" + f.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    storage.ref(path).put(f).then(function (snap) {
-      return snap.ref.getDownloadURL().then(function (url) {
-        return db.collection("fotos").add({
-          nombre: nombre, categoria: categoria, descripcion: descripcion,
-          url: url, path: path,
-          fecha: firebase.firestore.FieldValue.serverTimestamp()
-        });
-      });
-    }).then(function () {
+    procesarImagen(f, function (dataUrl) {
+      const fotos = getFotos();
+      fotos.push({ id: Date.now(), nombre, categoria, descripcion, url: dataUrl, fecha: Date.now() });
+      if (!saveFotos(fotos)) { msg.textContent = "❌ Sin espacio en este navegador. Borra alguna foto."; return; }
       msg.textContent = "✅ Foto publicada en la galería.";
       fileInput.value = ""; preview.style.display = "none";
       document.getElementById("nombre").value = "";
       document.getElementById("descripcion").value = "";
       cargarFotos();
-    }).catch(function () {
-      msg.textContent = "❌ Error al subir. Intenta de nuevo.";
     });
   });
 
-  function cargarFotos() {
-    var box = document.getElementById("mis-fotos");
-    db.collection("fotos").orderBy("fecha", "desc").limit(30).get().then(function (snap) {
-      box.innerHTML = "";
-      snap.forEach(function (doc) {
-        var f = doc.data();
-        var div = document.createElement("div");
-        div.className = "mi-foto";
-        div.innerHTML = '<img src="' + f.url + '" alt=""><button title="Eliminar">×</button>';
-        div.querySelector("button").addEventListener("click", function () {
-          if (!confirm("¿Eliminar esta foto?")) return;
-          db.collection("fotos").doc(doc.id).delete().then(function () {
-            if (f.path) storage.ref(f.path).delete().catch(function(){});
-            cargarFotos();
-          });
-        });
-        box.appendChild(div);
-      });
-      if (!box.innerHTML) box.innerHTML = "<p>Aún no has subido fotos.</p>";
-    });
+  function esc(t) {
+    return String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
+
+  function cargarFotos() {
+    const box = document.getElementById("mis-fotos");
+    const fotos = getFotos().sort((a, b) => b.fecha - a.fecha);
+    box.innerHTML = "";
+    fotos.forEach(function (f) {
+      const div = document.createElement("div");
+      div.className = "mi-foto";
+      div.innerHTML = '<img src="' + f.url + '" alt="' + esc(f.nombre) + '"><button title="Eliminar">×</button>';
+      div.querySelector("button").addEventListener("click", function () {
+        if (!confirm("¿Eliminar esta foto?")) return;
+        saveFotos(getFotos().filter(x => x.id !== f.id));
+        cargarFotos();
+      });
+      box.appendChild(div);
+    });
+    if (!box.innerHTML) box.innerHTML = "<p>Aún no has subido fotos.</p>";
+  }
+
+  mostrar();
 })();
 </script>
 

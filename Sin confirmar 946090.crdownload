@@ -1,0 +1,40 @@
+// ============================================================
+//  Galería pública — lee las fotos que el cliente sube en admin.html
+//  (guardadas en el navegador de ese dispositivo)
+//  Uso: <div id="galeria-grid" data-categoria="ave,exotico"></div>
+//       <p id="galeria-msg"></p>
+// ============================================================
+(function () {
+  var grid = document.getElementById("galeria-grid");
+  var msg = document.getElementById("galeria-msg");
+  if (!grid) return;
+
+  var filtro = grid.dataset.categoria ? grid.dataset.categoria.split(",") : null;
+
+  function esc(t) {
+    return String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  var fotos = [];
+  try { fotos = JSON.parse(localStorage.getItem("agrovet_fotos") || "[]"); }
+  catch (e) { fotos = []; }
+
+  fotos = fotos.filter(function (f) {
+    return !filtro || filtro.indexOf(f.categoria) !== -1;
+  }).sort(function (a, b) { return b.fecha - a.fecha; }).slice(0, 30);
+
+  if (!fotos.length) {
+    if (msg) msg.textContent = "Aún no hay fotos. ¡Vuelve pronto!";
+    return;
+  }
+  if (msg) msg.style.display = "none";
+  grid.innerHTML = fotos.map(function (f) {
+    return (
+      '<div class="foto-card">' +
+        '<img src="' + f.url + '" alt="' + esc(f.nombre || "Animal") + '" loading="lazy">' +
+        '<div class="foto-body"><h4>' + esc(f.nombre || "Sin nombre") + "</h4>" +
+        (f.descripcion ? "<p>" + esc(f.descripcion) + "</p>" : "") +
+        "</div></div>"
+    );
+  }).join("");
+})();
