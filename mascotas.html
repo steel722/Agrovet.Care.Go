@@ -26,7 +26,7 @@
       <a class="btn" href="https://wa.me/18298430727?text=Hola%20Agrovet.Care.Go%2C%20quiero%20agendar%20una%20consulta%20para%20mi%20mascota">🦜 Agendar consulta</a>
     </div>
   </div>
-  <img class="main" src="img/hero-loro.jpg" alt="Loro verde entre hojas tropicales">
+  <img class="main" src="img/hero-loro.jpg" data-foto="hero-loro" alt="Loro verde entre hojas tropicales">
 </div>
 
 <div class="badges">
@@ -96,7 +96,7 @@
 <script src="galeria.js"></script>
 <script>
 const WA = "18097367036";
-const ES_ADMIN = sessionStorage.getItem("agrovet_admin") === "1";
+const ES_ADMIN = localStorage.getItem("agrovet_admin") === "1";
 let AVES = [];
 
 function getFotosAves() {
@@ -146,6 +146,7 @@ function pintarCatalogo() {
       </div>`;
   }).join('');
   if (ES_ADMIN) activarEdicion();
+  if (window.initEdicionTextos) window.initEdicionTextos();
 }
 
 function activarEdicion() {
@@ -184,6 +185,8 @@ fetch('aves.json')
     document.getElementById('catalogo').innerHTML = '<p style="text-align:center">No se pudo cargar el catálogo.</p>';
   });
 </script>
+
+<script src="editar-textos.js"></script>
 
 </body>
 </html>
