@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mascotas y exóticos — Agrovet.Care.Go</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="tema-selva">
+
+<header>
+  <div class="header-inner">
+    <a class="brand" href="index.html">
+      <img src="logo.png" alt="Agrovet.Care.Go">
+      <span><span class="brand-name">Agrovet.Care.Go</span><br><span class="brand-sub">Veterinaria Carela Gomez</span></span>
+    </a>
+    <a class="volver" href="index.html">← Volver al inicio</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div>
+    <h1>Cuidado natural<br>para tu mascota</h1>
+    <p class="lead">Medicina compasiva para aves y animales exóticos — con la calidez que se merecen y el conocimiento que necesitan.</p>
+    <div class="hero-cta">
+      <a class="btn" href="https://wa.me/18095551234?text=Hola%20Agrovet.Care.Go%2C%20quiero%20agendar%20una%20consulta%20para%20mi%20mascota">🦜 Agendar consulta</a>
+    </div>
+  </div>
+  <img class="main" src="img/hero-loro.jpg" alt="Loro verde entre hojas tropicales">
+</div>
+
+<div class="badges">
+  <span>Medicina de aves</span>
+  <span>Trato sin estrés</span>
+  <span>Atención 24/7</span>
+</div>
+
+<img class="divider-img" src="img/divider.jpg" alt="">
+
+<section class="block">
+  <div class="wrap">
+    <h2 class="section-title">Especialidades</h2>
+    <p class="section-sub">Medicina preventiva y tratamiento para tus compañeros no tradicionales.</p>
+    <div class="cards">
+      <div class="card"><div class="icon">🦜</div><h3>Medicina de aves</h3><p>Chequeos, corte de uñas y pico, diagnóstico y tratamiento de aves ornamentales y exóticas.</p></div>
+      <div class="card"><div class="icon">🩺</div><h3>Consulta general</h3><p>Evaluación completa de salud, vacunación y desparasitación para mascotas exóticas.</p></div>
+      <div class="card"><div class="icon">🥗</div><h3>Nutrición</h3><p>Planes de alimentación adecuados a cada especie para una vida larga y sana.</p></div>
+    </div>
+  </div>
+</section>
+
+<img class="divider-img" src="img/divider.jpg" alt="">
+
+<section class="block">
+  <div class="wrap">
+    <h2 class="section-title">Catálogo de aves</h2>
+    <p class="section-sub">Aves disponibles con toda su información de cuidado. Toca cada ave para ver detalles.</p>
+    <div class="bird-grid" id="catalogo"><p style="text-align:center">Cargando catálogo…</p></div>
+  </div>
+</section>
+
+<section class="block" style="padding-top:20px">
+  <div class="wrap">
+    <div class="contact-box">
+      <h2>Agenda una consulta</h2>
+      <p>Trae a tu mascota o escríbenos para orientación sobre cuidados.</p>
+      <a class="btn" href="https://wa.me/18095551234?text=Hola%20Agrovet.Care.Go%2C%20quiero%20agendar%20una%20consulta%20para%20mi%20mascota">Agendar por WhatsApp</a>
+      <p style="margin-top:22px"><a class="volver" href="index.html" style="color:var(--green)">← Volver al inicio</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-grid">
+    <div><h4>Contacto</h4><p>📍 Dirección por confirmar<br>✉️ contacto@agrovetcarego.com<br>📞 +1 (809) 555-1234</p></div>
+    <div><h4>Horario</h4><p>Lun–Vie: 8am – 6pm<br>Sáb: 9am – 4pm<br>Urgencias: 24/7</p></div>
+    <div><h4>Agrovet.Care.Go</h4><p>Veterinaria Carela Gomez<br><em>Salud animal, producción sostenible, futuro seguro.</em></p></div>
+  </div>
+  <div class="footer-bottom">© 2026 Agrovet.Care.Go · Veterinaria Carela Gomez</div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/18095551234" aria-label="WhatsApp">💬</a>
+
+<script>
+const WA = "18095551234";
+fetch('aves.json')
+  .then(r => r.json())
+  .then(aves => {
+    const box = document.getElementById('catalogo');
+    box.innerHTML = aves.map(a => `
+      <div class="bird">
+        <div class="bird-body">
+          <span class="tag">${a.status}</span>
+          <h3>${a.name}</h3>
+          <div class="sci">${a.scientific}</div>
+          <div class="price">${a.price}</div>
+          <p>${a.description}</p>
+          <details><summary>🍽 Alimentación</summary><p>${a.feeding}</p></details>
+          <details><summary>🏡 Hábitat y cuidados</summary><p>${a.habitat}</p></details>
+          <div class="wa">
+            <a class="btn" style="padding:10px 26px; font-size:0.85rem" href="https://wa.me/${WA}?text=${encodeURIComponent('Hola Agrovet.Care.Go, me interesa el ave: ' + a.name)}">Preguntar por WhatsApp</a>
+          </div>
+        </div>
+      </div>`).join('');
+  })
+  .catch(() => {
+    document.getElementById('catalogo').innerHTML = '<p style="text-align:center">No se pudo cargar el catálogo.</p>';
+  });
+</script>
+
+</body>
+</html>
