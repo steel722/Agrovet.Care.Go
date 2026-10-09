@@ -1,0 +1,20 @@
+// ============================================================
+//  Agrovet.Care.Go — Configuración de Firebase
+// ------------------------------------------------------------
+//  1. Crea un proyecto gratis en https://console.firebase.google.com
+//  2. Activa Authentication → Email/Password y crea un usuario
+//  3. Crea una base Firestore y un Storage (ver README_FIREBASE.md)
+//  4. Copia aquí los datos de: Configuración del proyecto → Tus apps
+// ============================================================
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+// No tocar: detecta si ya pegaste tu configuración real
+const FIREBASE_LISTO = typeof firebaseConfig.apiKey === "string" && !firebaseConfig.apiKey.startsWith("TU_");

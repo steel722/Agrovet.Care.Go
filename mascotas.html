@@ -59,6 +59,17 @@
   </div>
 </section>
 
+<img class="divider-img" src="img/divider.jpg" alt="">
+
+<section class="block">
+  <div class="wrap">
+    <h2 class="section-title">Galería</h2>
+    <p class="section-sub">Nuestros animales, fotos de nuestro equipo.</p>
+    <p id="galeria-msg" style="text-align:center">Cargando galería…</p>
+    <div id="galeria-grid" data-categoria="ave,exotico"></div>
+  </div>
+</section>
+
 <section class="block" style="padding-top:20px">
   <div class="wrap">
     <div class="contact-box">
@@ -81,6 +92,10 @@
 
 <a class="wa-float" href="https://wa.me/18095551234" aria-label="WhatsApp">💬</a>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="galeria.js"></script>
 <script>
 const WA = "18095551234";
 fetch('aves.json')

@@ -206,6 +206,14 @@ footer a:hover { color: #fff; }
   nav { display: none; }
 }
 
+/* ---------- Galería de fotos (Firebase) ---------- */
+#galeria-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; }
+.foto-card { background: var(--white); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 22px rgba(30,64,41,.07); }
+.foto-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.foto-body { padding: 16px 18px; }
+.foto-body h4 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; color: var(--green-dark); }
+.foto-body p { font-size: .9rem; color: var(--ink-soft); }
+
 /* ---------- Botones por tema ---------- */
 :root { --btn-bg: #2E5B3F; --btn-ink: #fff; }
 .btn { background: var(--btn-bg); border-color: var(--btn-bg); color: var(--btn-ink); }

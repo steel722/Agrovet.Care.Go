@@ -1,0 +1,50 @@
+// ============================================================
+//  Galería pública — lee las fotos que el cliente sube en admin.html
+//  Uso: <div id="galeria-grid" data-categoria="ave,exotico"></div>
+//       <p id="galeria-msg"></p>
+// ============================================================
+(function () {
+  var grid = document.getElementById("galeria-grid");
+  var msg = document.getElementById("galeria-msg");
+  if (!grid) return;
+
+  var filtro = grid.dataset.categoria ? grid.dataset.categoria.split(",") : null;
+
+  function esc(t) {
+    return String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  if (typeof firebase === "undefined" || !FIREBASE_LISTO) {
+    if (msg) msg.textContent = "Galería próximamente.";
+    return;
+  }
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  var db = firebase.firestore();
+
+  db.collection("fotos").orderBy("fecha", "desc").limit(30).get()
+    .then(function (snap) {
+      var docs = [];
+      snap.forEach(function (d) {
+        var f = d.data();
+        if (!filtro || filtro.indexOf(f.categoria) !== -1) docs.push(f);
+      });
+      if (!docs.length) {
+        if (msg) msg.textContent = "Aún no hay fotos. ¡Vuelve pronto!";
+        return;
+      }
+      if (msg) msg.style.display = "none";
+      grid.innerHTML = docs.map(function (f) {
+        return (
+          '<div class="foto-card">' +
+            '<img src="' + esc(f.url) + '" alt="' + esc(f.nombre || "Animal") + '" loading="lazy">' +
+            '<div class="foto-body"><h4>' + esc(f.nombre || "Sin nombre") + "</h4>" +
+            (f.descripcion ? "<p>" + esc(f.descripcion) + "</p>" : "") +
+            "</div></div>"
+        );
+      }).join("");
+    })
+    .catch(function () {
+      if (msg) msg.textContent = "No se pudo cargar la galería.";
+    });
+})();
