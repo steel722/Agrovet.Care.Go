@@ -93,7 +93,7 @@ nav a:hover, nav a.active { color: var(--green); font-weight: 600; }
 .gateway-section { padding: 60px 0 70px; text-align: center; }
 .gateway-section h2 { font-size: 2.6rem; margin-bottom: 10px; }
 .gateway-section > .wrap > p { color: var(--ink-soft); margin-bottom: 40px; font-size: 1.1rem; }
-.gateway { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; max-width: 920px; margin: 0 auto; }
+.gateway { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; max-width: 1080px; margin: 0 auto; }
 .gate-card {
   background: var(--white); border: 2px solid var(--line); border-radius: 22px;
   padding: 44px 34px; text-decoration: none; color: var(--ink);
@@ -255,6 +255,15 @@ body.tema-campo {
   --gold: #C9983C; --ink: #3A2E1E; --ink-soft: #6E5F45;
   --white: #FFFDF6; --line: #E2D3AC;
   --btn-bg: #7A4E2D; --btn-ink: #fff;
+}
+
+/* ---------- Tema combate (aves de combate) ---------- */
+body.tema-combate {
+  --parchment: #FBF3E4; --parchment-2: #F5E8CF;
+  --green: #A03D2A; --green-dark: #7C2E1F; --green-deep: #4A1D12;
+  --gold: #D4A017; --ink: #3A241A; --ink-soft: #6E5540;
+  --white: #FFFDF6; --line: #E5CFA0;
+  --btn-bg: #A03D2A; --btn-ink: #fff;
 }
 
 /* ---------- Tema selva (mascotas) ---------- */
