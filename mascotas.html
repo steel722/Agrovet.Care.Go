@@ -55,6 +55,7 @@
   <div class="wrap">
     <h2 class="section-title">Catálogo de aves</h2>
     <p class="section-sub">Aves disponibles con toda su información de cuidado. Toca cada ave para ver detalles.</p>
+    <p id="aviso-admin" style="display:none;text-align:center;color:var(--green);font-weight:500;margin-bottom:18px">✏️ Modo edición: toca 📷 en cada ave para cambiar su foto</p>
     <div class="bird-grid" id="catalogo"><p style="text-align:center">Cargando catálogo…</p></div>
   </div>
 </section>
@@ -95,12 +96,41 @@
 <script src="galeria.js"></script>
 <script>
 const WA = "18095551234";
-fetch('aves.json')
-  .then(r => r.json())
-  .then(aves => {
-    const box = document.getElementById('catalogo');
-    box.innerHTML = aves.map(a => `
+const ES_ADMIN = sessionStorage.getItem("agrovet_admin") === "1";
+let AVES = [];
+
+function getFotosAves() {
+  try { return JSON.parse(localStorage.getItem("agrovet_ave_fotos") || "{}"); }
+  catch (e) { return {}; }
+}
+function esc(t) {
+  return String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+function procesarImagen(file, cb) {
+  const img = new Image();
+  img.onload = function () {
+    const MAX = 1000;
+    let w = img.width, h = img.height;
+    if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+    const c = document.createElement("canvas");
+    c.width = w; c.height = h;
+    c.getContext("2d").drawImage(img, 0, 0, w, h);
+    cb(c.toDataURL("image/jpeg", 0.82));
+  };
+  img.src = URL.createObjectURL(file);
+}
+
+function pintarCatalogo() {
+  const box = document.getElementById('catalogo');
+  const custom = getFotosAves();
+  box.innerHTML = AVES.map((a, i) => {
+    const src = custom[a.name] || a.photo || "";
+    const foto = src
+      ? `<div class="bird-photo"><img src="${src}" alt="${esc(a.name)}">${ES_ADMIN ? `<button class="btn-foto" data-i="${i}">📷 Cambiar foto</button>` : ""}</div>`
+      : `<div class="bird-photo placeholder"><span>🦜</span>${ES_ADMIN ? `<button class="btn-foto" data-i="${i}">📷 Agregar foto</button>` : ""}</div>`;
+    return `
       <div class="bird">
+        ${foto}
         <div class="bird-body">
           <span class="tag">${a.status}</span>
           <h3>${a.name}</h3>
@@ -113,8 +143,43 @@ fetch('aves.json')
             <a class="btn" style="padding:10px 26px; font-size:0.85rem" href="https://wa.me/${WA}?text=${encodeURIComponent('Hola Agrovet.Care.Go, me interesa el ave: ' + a.name)}">Preguntar por WhatsApp</a>
           </div>
         </div>
-      </div>`).join('');
-  })
+      </div>`;
+  }).join('');
+  if (ES_ADMIN) activarEdicion();
+}
+
+function activarEdicion() {
+  const box = document.getElementById('catalogo');
+  let input = document.getElementById('input-foto-ave');
+  if (!input) {
+    input = document.createElement('input');
+    input.type = 'file'; input.accept = 'image/*'; input.id = 'input-foto-ave';
+    input.style.display = 'none';
+    document.body.appendChild(input);
+  }
+  let idx = -1;
+  box.querySelectorAll('.btn-foto').forEach(b => {
+    b.onclick = (e) => { e.preventDefault(); idx = +b.dataset.i; input.click(); };
+  });
+  input.onchange = () => {
+    const f = input.files[0];
+    if (!f || idx < 0 || !AVES[idx]) return;
+    procesarImagen(f, (dataUrl) => {
+      const custom = getFotosAves();
+      custom[AVES[idx].name] = dataUrl;
+      try { localStorage.setItem("agrovet_ave_fotos", JSON.stringify(custom)); }
+      catch (e) { alert("Sin espacio en el navegador."); return; }
+      pintarCatalogo();
+    });
+    input.value = "";
+  };
+  const aviso = document.getElementById('aviso-admin');
+  if (aviso) aviso.style.display = 'block';
+}
+
+fetch('aves.json')
+  .then(r => r.json())
+  .then(aves => { AVES = aves; pintarCatalogo(); })
   .catch(() => {
     document.getElementById('catalogo').innerHTML = '<p style="text-align:center">No se pudo cargar el catálogo.</p>';
   });
