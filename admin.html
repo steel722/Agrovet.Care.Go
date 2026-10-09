@@ -99,7 +99,7 @@ const ADMIN_PASS = "agrovet2026";
   }
 
   function mostrar() {
-    const logueado = sessionStorage.getItem("agrovet_admin") === "1";
+    const logueado = localStorage.getItem("agrovet_admin") === "1";
     loginBox.style.display = logueado ? "none" : "block";
     panel.style.display = logueado ? "block" : "none";
     if (logueado) cargarFotos();
@@ -109,7 +109,7 @@ const ADMIN_PASS = "agrovet2026";
     const email = document.getElementById("email").value.trim();
     const pass = document.getElementById("pass").value;
     if (email === ADMIN_USER && pass === ADMIN_PASS) {
-      sessionStorage.setItem("agrovet_admin", "1");
+      localStorage.setItem("agrovet_admin", "1");
       loginError.textContent = "";
       document.getElementById("pass").value = "";
       mostrar();
@@ -119,7 +119,7 @@ const ADMIN_PASS = "agrovet2026";
   });
 
   document.getElementById("btn-salir").addEventListener("click", function () {
-    sessionStorage.removeItem("agrovet_admin");
+    localStorage.removeItem("agrovet_admin");
     mostrar();
   });
 

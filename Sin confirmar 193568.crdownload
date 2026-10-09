@@ -1,0 +1,66 @@
+// ============================================================
+//  Edición de textos como admin — sin servidor
+//  Tras iniciar sesión en admin.html, los textos de las páginas
+//  se vuelven editables con solo tocarlos. Se guardan en el
+//  navegador de ese dispositivo y se muestran al visitar.
+// ============================================================
+(function () {
+  var PAGE = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  var LS = "agrovet_textos";
+  var YA = {}; // claves ya procesadas en esta carga
+
+  var SELECTOR = "h1, h2, h3, .lead, .section-sub, .gate-sub, .card p, .check p, .check strong, .contact-box p, .bird p, .bird .sci, .bird .price, .foto-body p, .foto-body h4, .intro-tag, .badges span";
+
+  function leer() { try { return JSON.parse(localStorage.getItem(LS) || "{}"); } catch (e) { return {}; } }
+  function guardar(o) { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} }
+
+  function init() {
+    var ES_ADMIN = localStorage.getItem("agrovet_admin") === "1";
+    var textos = leer();
+    var vistos = {};
+    var els = document.querySelectorAll(SELECTOR);
+    els.forEach(function (el) {
+      if (el.closest("#intro") || el.closest("a") || el.closest("button")) return;
+      if (el.querySelector("a,button,summary,input,select,textarea")) return;
+      var base = PAGE + "|" + el.tagName + "|" + el.textContent.trim().replace(/\s+/g, " ").slice(0, 40);
+      var n = vistos[base] || 0;
+      vistos[base] = n + 1;
+      var k = base + "|" + n;
+      if (YA[k]) return;
+      YA[k] = true;
+      if (textos[k] != null && textos[k] !== el.innerHTML) el.innerHTML = textos[k];
+      if (!ES_ADMIN) return;
+      el.setAttribute("data-ed", "");
+      el.contentEditable = "true";
+      el.spellcheck = false;
+      el.addEventListener("blur", function () {
+        var t = leer(); t[k] = el.innerHTML; guardar(t);
+      });
+      el.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); el.blur(); }
+      });
+      el.addEventListener("paste", function (e) {
+        e.preventDefault();
+        var txt = (e.clipboardData || window.clipboardData).getData("text/plain");
+        document.execCommand("insertText", false, txt);
+      });
+    });
+    if (ES_ADMIN && !document.getElementById("aviso-edicion")) {
+      var s = document.createElement("style");
+      s.textContent = "[data-ed]{outline:2px dashed #B99B5F;outline-offset:4px;cursor:text}[data-ed]:focus{outline-style:solid;outline-color:#7A8B6F}";
+      document.head.appendChild(s);
+      var aviso = document.createElement("div");
+      aviso.id = "aviso-edicion";
+      aviso.style.cssText = "position:fixed;bottom:18px;left:18px;z-index:9998;background:#1E4029;color:#fff;padding:10px 18px;border-radius:30px;font-size:.85rem;box-shadow:0 8px 20px rgba(0,0,0,.25)";
+      aviso.textContent = "✏️ Modo edición: toca cualquier texto para cambiarlo";
+      document.body.appendChild(aviso);
+    }
+  }
+
+  window.initEdicionTextos = init;
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
