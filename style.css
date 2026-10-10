@@ -93,7 +93,7 @@ nav a:hover, nav a.active { color: var(--green); font-weight: 600; }
 .gateway-section { padding: 60px 0 70px; text-align: center; }
 .gateway-section h2 { font-size: 2.6rem; margin-bottom: 10px; }
 .gateway-section > .wrap > p { color: var(--ink-soft); margin-bottom: 40px; font-size: 1.1rem; }
-.gateway { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; max-width: 1080px; margin: 0 auto; }
+.gateway { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 28px; max-width: 1120px; margin: 0 auto; }
 .gate-card {
   background: var(--white); border: 2px solid var(--line); border-radius: 22px;
   padding: 44px 34px; text-decoration: none; color: var(--ink);
@@ -103,6 +103,10 @@ nav a:hover, nav a.active { color: var(--green); font-weight: 600; }
 .gate-card .emoji { font-size: 3.4rem; }
 .gate-card h3 { font-size: 2rem; margin: 14px 0 8px; }
 .gate-card p { color: var(--ink-soft); margin-bottom: 24px; }
+/* Tarjeta de administrador */
+.gate-card.admin { background: var(--green-deep); border: 2px solid var(--gold); }
+.gate-card.admin h3 { color: #fff; }
+.gate-card.admin p { color: #E9DCC3; }
 
 /* ---------- Gateway (página de entrada) ---------- */
 .gate-page {

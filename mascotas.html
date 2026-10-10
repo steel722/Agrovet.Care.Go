@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mascotas y exóticos — Agrovet.Care.Go</title>
+<title>Tienda y pet care — Agrovet.Care.Go</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="tema-selva">
@@ -20,8 +20,8 @@
 
 <div class="hero">
   <div>
-    <h1>Cuidado natural<br>para tu mascota</h1>
-    <p class="lead">Medicina compasiva para aves y animales exóticos — con la calidez que se merecen y el conocimiento que necesitan.</p>
+    <h1>Tienda y pet care<br>para tu mascota</h1>
+    <p class="lead">Compra tu ave exótica y cuídala con nosotros: tienda mezclada con servicios veterinarios y de pet care, todo en un solo lugar.</p>
     <div class="hero-cta">
       <a class="btn" href="https://wa.me/18298430727?text=Hola%20Agrovet.Care.Go%2C%20quiero%20agendar%20una%20consulta%20para%20mi%20mascota">🦜 Agendar consulta</a>
     </div>
@@ -30,8 +30,8 @@
 </div>
 
 <div class="badges">
-  <span>Medicina de aves</span>
-  <span>Trato sin estrés</span>
+  <span>Tienda de aves</span>
+  <span>Pet care</span>
   <span>Atención 24/7</span>
 </div>
 
@@ -39,13 +39,10 @@
 
 <section class="block">
   <div class="wrap">
-    <h2 class="section-title">Especialidades</h2>
-    <p class="section-sub">Medicina preventiva y tratamiento para tus compañeros no tradicionales.</p>
-    <div class="cards">
-      <div class="card"><div class="icon">🦜</div><h3>Medicina de aves</h3><p>Chequeos, corte de uñas y pico, diagnóstico y tratamiento de aves ornamentales y exóticas.</p></div>
-      <div class="card"><div class="icon">🩺</div><h3>Consulta general</h3><p>Evaluación completa de salud, vacunación y desparasitación para mascotas exóticas.</p></div>
-      <div class="card"><div class="icon">🥗</div><h3>Nutrición</h3><p>Planes de alimentación adecuados a cada especie para una vida larga y sana.</p></div>
-    </div>
+    <h2 class="section-title">🛍️ Tienda de aves</h2>
+    <p class="section-sub">Aves disponibles para compra, con toda su información de cuidado. Toca cada ave para ver detalles.</p>
+    <p id="aviso-admin" style="display:none;text-align:center;color:var(--green);font-weight:500;margin-bottom:18px">✏️ Modo edición: toca 📷 en cada ave para cambiar su foto</p>
+    <div class="bird-grid" id="catalogo"><p style="text-align:center">Cargando tienda…</p></div>
   </div>
 </section>
 
@@ -53,10 +50,13 @@
 
 <section class="block">
   <div class="wrap">
-    <h2 class="section-title">Catálogo de aves</h2>
-    <p class="section-sub">Aves disponibles con toda su información de cuidado. Toca cada ave para ver detalles.</p>
-    <p id="aviso-admin" style="display:none;text-align:center;color:var(--green);font-weight:500;margin-bottom:18px">✏️ Modo edición: toca 📷 en cada ave para cambiar su foto</p>
-    <div class="bird-grid" id="catalogo"><p style="text-align:center">Cargando catálogo…</p></div>
+    <h2 class="section-title">🩺 Pet care y veterinaria</h2>
+    <p class="section-sub">Servicios para consentir y mantener sana a tu mascota.</p>
+    <div class="cards">
+      <div class="card"><div class="icon">🦜</div><h3>Medicina de aves</h3><p>Chequeos, corte de uñas y pico, diagnóstico y tratamiento de aves ornamentales y exóticas.</p></div>
+      <div class="card"><div class="icon">🩺</div><h3>Consulta general</h3><p>Evaluación completa de salud, vacunación y desparasitación para mascotas exóticas.</p></div>
+      <div class="card"><div class="icon">🥗</div><h3>Nutrición</h3><p>Planes de alimentación adecuados a cada especie para una vida larga y sana.</p></div>
+    </div>
   </div>
 </section>
 
@@ -182,7 +182,7 @@ fetch('aves.json')
   .then(r => r.json())
   .then(aves => { AVES = aves; pintarCatalogo(); })
   .catch(() => {
-    document.getElementById('catalogo').innerHTML = '<p style="text-align:center">No se pudo cargar el catálogo.</p>';
+    document.getElementById('catalogo').innerHTML = '<p style="text-align:center">No se pudo cargar la tienda.</p>';
   });
 </script>
 
